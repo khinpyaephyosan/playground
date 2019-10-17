@@ -1,0 +1,30 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: generate ssh keys
+      openssh_keypair:
+        path: $HOME/.ssh/id_rsa
+        force: true
+        type: rsa
+        size: 1024
+      delegate_to: localhost
+
+    - name: fetch public key content
+      command: cat $HOME/.ssh/id_rsa.pub
+      register: public_key
+      delegate_to: localhost
+
+    - name: share keys
+      raw: ssh-copy-id "{{ ansible_host }}"
+      #lineinfile:
+      #  path: $HOME/.ssh/autorized_keys
+      #  line: "{{ public_key }}"
+#    - name: share keys
+#      authorized_key:
+#        user: ansible
+#        state: present
+#        key: '{{ item }}'
+#      with_file:
+#        - $HOME/.ssh/id_rsa.pub
+khinpyaephyosan

@@ -1,0 +1,2 @@
+ansible_connection: smart
+ansible_port: 22
