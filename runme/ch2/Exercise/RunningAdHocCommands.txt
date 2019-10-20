@@ -1,0 +1,20 @@
+su root
+
+vim /etc/sudoers.d/ansible
+
+#content#
+ansible ALL=(ALL)	NOPASSWD: ALL
+
+vim ansible.cfg
+
+#content#
+[defaults]
+inventory=./inventory
+
+
+ansible localhost -m command -a 'id'
+ansible localhost -m command -a 'id' -u ansible 
+ansible localhost -m command -a 'cat /etc/motd' -u ansible
+ansible localhost -m copy -a 'content="Managed by Ansible\n" dest=/etc/motd' -u ansible
+ansible localhost -m copy -a 'content="Managed by Ansible\n" dest=/etc/motd' -u ansible --become
+ansible lab -m copy -a 'content="Managed by Ansible\n" dest=/etc/motd' -u ansible --become

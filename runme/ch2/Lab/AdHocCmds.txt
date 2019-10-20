@@ -1,0 +1,4 @@
+ansible all -m command -a 'id'
+ansible all -m copy -a 'content="This server is managed by Ansible.\n" dest=/etc/motd'
+ansible all -m command -a 'cat /etc/motd'
+
