@@ -1,0 +1,13 @@
+[myself]
+localhost
+
+[web]
+m-node1
+
+[db]
+m-node2
+
+[lab:children]
+myself
+web
+db

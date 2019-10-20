@@ -1,0 +1,51 @@
+---
+- hosts: web
+  become: true
+  tasks:
+    - name: ensure latest version of packages
+      yum:
+        name: 
+          - firewalld
+          - httpd
+          - php
+          - php-mysql
+          - mariadb-server
+        state: latest
+
+    - name: enable and start firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: allow http service
+      firewalld: 
+        service: http
+        permanent: yes
+        state: enabled
+
+    - name: http service enable and started
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: mariadb-service enable and started
+      service: 
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: fetch index.html
+      get_url:
+        url: http://m-node1/index.html
+        dest: /var/www/html/index.html
+        mode: 0644
+
+- hosts: localhost
+  become: no
+  tasks:
+    - name: uri
+      uri:
+        url: http://m-node2
+        status_code: 200

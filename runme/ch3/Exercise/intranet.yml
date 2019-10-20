@@ -1,0 +1,36 @@
+---
+- hosts: web
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: httpd
+      yum:
+        name: [ httpd, firewalld ]
+        state: latest
+
+    - name: ensure the content
+      copy:
+        dest: /var/www/html/index.html
+        content: "Welcome to the example.com intranet!"
+
+    - name: firewalld
+      firewalld:
+        zone: public
+        service: http
+        permanent: yes
+        state: enabled
+
+    - name: httpd firewalld started
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items: [ httpd, firewalld ]
+
+- hosts: localhost
+  become: no
+  tasks:
+    - name: test url
+      uri:
+        url: http://m-node1
+        status_code: 200
