@@ -1,0 +1,15 @@
+---
+- hosts: all
+  user: ansible
+  become: true
+  vars:
+    system_owner: khinpyaephyosan@gmail.com
+  tasks:
+    - name: copy template
+      template:
+        src: motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: 0644
+
