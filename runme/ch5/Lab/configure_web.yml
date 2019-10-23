@@ -1,0 +1,44 @@
+---
+  - name: check http available
+    shell: rpm -qa httpd
+    register: command_output
+    failed_when: command_output.rc == 1
+
+  - block:
+      - name: retrieve http config
+        get_url:
+          url: "{{ https_uri }}"
+          dest: /etc/httpd/conf.d
+          force: yes
+
+      - name: create directories
+        file:
+          path: "{{ item }}"
+          state: direstory
+          recurse: yes
+          mode: 0755
+        with_items:
+           - /etc/httpd/conf.d/ssl
+           - /etc/httpd/conf.d/logs
+      - name: check /etc/httpd/conf.d/ssl.conf
+        stat:
+          path: /etc/httpd/conf.d/ssl.conf
+        register: stat_result
+
+      - name: rename file
+        shell: mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.bak
+        when: stat_result.stat.exists
+
+      - name: fetch ssl cert file
+        unarchive:
+          src: "{{ ssl_uri }}"
+          dest: /etc/httpd/conf.d/ssl/
+          copy: no
+        notify: restart_services
+      
+      - name: create index.html
+        copy:
+          content: "{{ ansible_fqdn }} ( {{ ansible_default.ipv4.address }} ) has been customized by Ansbile!"
+          dest: /var/www/html/index.html
+
+    when: command_output.rc == 0

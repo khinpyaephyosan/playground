@@ -1,0 +1,31 @@
+---
+- hosts: web
+  become: yes
+  tasks:
+    - name: gather hostname
+      debug:
+        var: ansible_hostname
+
+    - name: fqdn
+      debug:
+        var: ansible_fqdn
+
+    - name: ipv4 address
+      debug:
+        var: ansible_default_ipv4.address
+
+    - name: interfaces
+      debug:
+        var: ansible_interfaces
+
+    - name: device partations
+      debug:
+        var: ansible_devices.sda.partitions.sda1.size
+
+    - name: nameserver
+      debug:
+        var: ansible_dns.nameservers
+
+    - name: kernel
+      debug:
+        var: ansible_kernel

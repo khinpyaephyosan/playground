@@ -1,0 +1,39 @@
+---
+- hosts: web
+  vars:
+    rule: http
+  tasks:
+    - name: include variables
+      include_vars: vars/variables.yml
+
+    - name: include task
+      include: tasks/environment.yml
+      vars:
+        package: httpd
+        service: httpd
+        svc_state: started
+    
+    - name: install firewalld 
+      yum: 
+        name: "{{ firewall_pkg }}"
+        state: latest
+
+    - name: start firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: add fw rule
+      firewalld:
+        zone: public
+        service: "{{ rule }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+    
+    - name: create index.html
+      copy:
+        content: "{{ ansible_fqdn }} has been customized using Ansible on the {{ ansible_date_time.date }}\n"
+        dest: /var/www/html/index.html
+

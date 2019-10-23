@@ -1,0 +1,53 @@
+---
+- hosts: web
+  become: yes
+  vars:
+    web_pkg: httpd
+    firewall_pkg: firewalld
+    web_service: httpd
+    firewall_service: firewalld
+    python_pkg: python-httplib2
+    rule: http
+  tasks:
+    - name: check latest pkg installed
+      yum:
+        name: 
+          - "{{ web_pkg }}"
+          - "{{ firewall_pkg }}"
+          - "{{ python_pkg }}"
+        state: latest
+
+    - name: check web service status
+      service:
+        name: "{{ web_service }}"
+        state: started
+        enabled: yes
+
+    - name: check firewall service status
+      service:
+        name: "{{ firewall_pkg }}"
+        state: started
+        enabled: yes
+
+    - name: check web content
+      copy:
+        content: "Hello"
+        dest: /var/www/html/index.html
+
+    - name: check firewall port
+      firewalld:
+        zone: public
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: true
+
+- name: verification
+  hosts: localhost
+  become: false
+  tasks:
+    - name: ensure web content
+      uri:
+        url: http://m-node1
+        status_code: 200
+    

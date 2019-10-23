@@ -1,0 +1,29 @@
+---
+- hosts: db
+  become: yes
+  vars:
+    firewall: firewalld
+  tasks:
+    - name: include vars/main.yml
+      include_vars: vars/main.yml
+
+    - name: include tasks/main.yml
+      include: tasks/main.yml
+
+    - name: install firewall
+      yum:
+        name: "{{ firewall }}"
+        state: latest
+
+    - name: open port80
+      firewalld:
+        port: 80/tcp
+        zone: public
+        immediate: yes
+        permanent: yes
+        state: enabled
+
+    - name: copy index.html
+      file:
+        content: "{{ ansible_fqdn }} ( {{ ansible_default_ipv4.address }} ) has been customized by Ansible/n"
+        dest: "{{ web_root }}"

@@ -1,0 +1,18 @@
+---
+- hosts: web
+  become: yes
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+    - name: create facts.d dir
+      file:
+        path: "{{ remote_dir }}"
+        recurse: yes
+        state: directory
+
+    - name: push custom.fact
+      copy:
+        src: "{{ facts_file }}"
+        dest: "{{ remote_dir }}"
+

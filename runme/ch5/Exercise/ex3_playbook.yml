@@ -1,0 +1,22 @@
+---
+- hosts: all
+  tasks:
+    - name: include ex3_configure_mail.yml
+      include: ex3_configure_mail.yml
+      when: inventory_hostname in groups['db']
+
+  handlers:
+    - name: start_postfix
+      service:
+        name: postfix
+        state: started
+
+    - name: start_dovecot
+      service:
+        name: dovecot
+        state: started
+
+    - name: restart postfix
+      service:
+        name: postfix
+        state: restarted

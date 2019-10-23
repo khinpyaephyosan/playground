@@ -1,0 +1,9 @@
+---
+- name: install {{ package }} server
+  yum:
+    name: "{{ package }}"
+    state: latest
+- name: start the {{ service }} service
+  service:
+    name: "{{ service }}"
+    state: "{{ svc_state }}"

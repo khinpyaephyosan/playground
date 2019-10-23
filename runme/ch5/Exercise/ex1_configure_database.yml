@@ -1,0 +1,23 @@
+---
+    - name: install extra packages
+      yum:
+        name: "{{ extra_packages }}"
+    
+    - name: fetch my.cnf
+      get_url:
+        url: https://gist.githubusercontent.com/fevangelou/fb72f36bbe333e059b66/raw/899c029e4bd5e81b449588c5638bf8bf9b0ad884/my.cnf
+        dest: "{{ config_db_path }}"
+        owner: mysql
+        group: mysql
+        mode: 0644
+        seuser: system_u
+        setype: mysqld_etc_t
+        force: yes
+        
+    - name: start db service
+      service:
+        name: "{{ db_service }}"
+        state: started
+        enabled: yes
+
+

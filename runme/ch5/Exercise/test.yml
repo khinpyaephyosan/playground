@@ -1,0 +1,11 @@
+---
+- hosts: web
+  tasks:
+    - name: check httpd service
+      command: systemctl is-active httpd
+      ignore_errors: yes
+      register: result
+    - name: debug
+      debug:
+        var: result.stdout
+      when: result.stdout == 'active'

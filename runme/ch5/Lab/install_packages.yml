@@ -1,0 +1,19 @@
+---
+  - name: install web_package
+    yum: 
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - "{{ web_package }}"
+      - "{{ ssl_package }}"
+    when:
+     - inventory_hostname in groups['web']
+     - ('ansible_memory.mb.real.total) > (memory)'
+
+
+  - name: start web_service
+    service:
+      name: "{{ web_service }}"
+      state: started
+
+

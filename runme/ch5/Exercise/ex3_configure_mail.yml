@@ -1,0 +1,28 @@
+---
+    - name: install postfix
+      yum:
+        name: postfix
+        state: latest
+      tags:
+        - server
+      notify:
+        - start_postfix
+
+    - name: install dovecot
+      yum:
+        name: dovecot
+        state: latest
+      tags:
+        - client
+      notify:
+        - start_dovecot
+
+    - name: fetch postfix config
+      get_url:
+        url: 'https://gist.githubusercontent.com/maryelizbeth/2931391/raw/13b9eb46c932c21ef4c772ddafbcc5d4a4cea8ed/main.cf'
+        dest: /etc/postfix/main.cf
+      tags:
+        - server
+      notify:
+        - restart_postfix
+
