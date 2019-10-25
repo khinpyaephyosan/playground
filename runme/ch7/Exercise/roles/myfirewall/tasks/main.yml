@@ -1,0 +1,21 @@
+---
+# tasks file for myfirewall
+
+  - name: install firewalld
+    yum:
+      name: firewalld
+      state: latest
+
+  - name: start firewalld service
+    service: 
+      name: firewalld
+      state: restarted
+
+  - name: open fireall service port
+    firewalld:
+      zone: public
+      service: "{{ firewall_service }}"
+      permanent: yes
+      state: enabled
+      immediate: yes
+

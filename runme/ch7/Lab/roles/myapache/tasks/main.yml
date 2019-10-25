@@ -1,0 +1,54 @@
+---
+# tasks file for myapache
+
+  - name: install httpd packages
+    yum:
+      name: httpd
+      state: latest
+
+  - name: install firewalld packages
+    yum:
+      name: firewalld
+      state: latest
+
+  - name: copy apache_httpdconf.j2
+    template:
+      src: apache_httpdconf.j2
+      dest: /etc/httpd/conf/httpd.conf
+      owner: root
+      group: root
+      mode: 0444
+    notify: restart apache
+    when: apache_enable
+
+  - name: copy apache_indexhtml.j2
+    template:
+      src: apache_indexhtml.j2
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 044
+    when: apache_enable
+
+  - name: start httpd service
+    service: 
+      name: httpd
+      state: started
+      enabled: yes
+    when: apache_enable
+
+  - name: start firewalld service
+    service:
+      name: firewalld
+      state: started
+      enabled: yes
+    when: apache_enable
+
+  - name: enable firewall rule
+    firewalld:
+      zone: public
+      port: 80/tcp
+      immediate: yes
+      permanent: yes
+      state: enabled
+    when: apache_enable

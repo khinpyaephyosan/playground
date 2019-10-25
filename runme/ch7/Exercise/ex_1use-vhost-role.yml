@@ -1,0 +1,14 @@
+---
+- name: use vhost role playbook
+  hosts: web
+  
+  pre_tasks: 
+     - debug: 
+         msg: "Hello! This is begining of web svr configuraiton"
+
+  roles:
+    - myvhost
+
+  post_tasks:
+    - debug:
+        msg: "web svr has been configured"
