@@ -1,0 +1,12 @@
+---
+- hosts: web
+  become: yes
+  tasks:
+    - name: delegate to
+      setup:
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['db'] }}"
+
+    - name: debug
+      debug:
+        var: "{{ ansible_enp0s8.ipv4.address }}"

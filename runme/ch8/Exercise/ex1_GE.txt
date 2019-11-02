@@ -1,0 +1,13 @@
+ansible m-node1 -i inventory --list-hosts
+ansible 127.0.0.1 -i inventory --list-hosts
+ansible all -i inventory --list-hosts
+ansible db -i inventory --list-hosts
+ansible lab -i inventory --list-hosts
+ansible ungrouped -i inventory --list-hosts
+ansible 'm-node*' -i inventory --list-hosts
+ansible 'all, !m-node*' -i inventory --list-hosts
+ansible m-node1,m-node2 -i inventory --list-hosts
+ansible 'm*' -i inventory --list-hosts
+ansible 'myself,m-node*' -i inventory --list-hosts
+ansible 'db,&lab' -i inventory --list-hosts
+

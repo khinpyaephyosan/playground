@@ -1,0 +1,79 @@
+---
+- name: install and configure httpd
+  hosts: all
+  become: yes
+  remote_user: ansible
+  tasks:
+    - name: install http
+      yum:
+        name: httpd
+        state: latest
+    
+    - name: start and enable http
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: install firewall
+      yum:
+        name: firewalld
+        state: latest
+
+    - name: start and enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: firewall rule for http traffic
+      firewalld:
+        zone: public
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: copy httpd.conf configuration file
+      template:
+        src: templates/m-node2-httpd.conf.j2
+        dest: /etc/httpd/conf.d/myconfig.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify: restart httpd
+ 
+  handlers:     
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+
+- name: deploy web server and disable proxy server
+  hosts: web
+  remote_user: ansible
+  become: true
+  tasks:
+    - name: stop the proxy server
+      service:
+        name: httpd
+        state: stopped
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['web'] }}"
+
+    - name: deploy index.html
+      template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: 0644
+
+    - name: start proxy server
+      service: 
+        name: httpd
+        state: started
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['db'] }}"
+    
+    

@@ -1,0 +1,35 @@
+---
+- name: longfiles aysnc playbook
+  hosts: web
+  become: yes
+  remote_user: ansible
+  tasks:
+    - name: copy ex3_longfile.j2
+      template:
+        src: templates/ex3_longfiles.j2
+        dest: /usr/local/bin/longfiles
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: run ex3_longfile.j2
+      command: "/usr/local/bin/longfiles {{ item }} /tmp/{{ item }}.file"
+      async: 110
+      poll: 0 
+      with_items:
+         - foo
+         - bar
+         - baz
+      register: script_sleeper
+      
+    - name: show script_sleeper
+      debug:
+        var: script_sleeper
+
+    - name: job status
+      async_status: 
+         jid: '{{ script_sleeper.ansible_job_id }}'
+      register: job_result
+      until: job_result.finished
+      retries: 30
+     

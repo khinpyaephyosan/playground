@@ -1,0 +1,52 @@
+---
+- hosts: web
+  serial: 1
+  become: yes
+  remote_user: ansible
+  tasks:
+    - name: remove webservers from the load balancer
+      haproxy:
+        state: disabled
+        host: "{{ inventory_hostname }}"
+        socket: /var/lib/haproxy/stats
+        backend: app
+        wait: yes
+      delegate_to: "{{ item }}"
+      with_items: "{{ greoups['lbserver'] }}"
+    - name: copy update page template
+      template:
+        src: templates/index-ver1.html.j2
+        dest: /var/www/html/index.html
+      register: pageupgrade
+    - name: restart webservers
+      command: shutdown -r +1 "Ansible updates triggered" 
+      async: 60
+      poll: 0
+      ignore_errors: yes
+      when: pageupgrade.changed
+    - name: wait for the webserver to reboot
+      become: False
+      wait_for: 
+        host: "{{ inventory_hostname }}"
+        state: started
+        port:22
+        delay: 80
+        timeout: 200
+      delegate_to: localhost
+      when: pageupgrade.changed
+    - name: wait for the webserver port 
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 80
+        state: started
+        timeout: 20
+    - name: readd the webservers to load balancer pool
+      haproxy:
+        state: enabled
+        backend: app
+        host: "{{ inventory_hostname }}"
+        socket: /var/lib/haproxy/stats
+        wait: yes
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['lbserver'] }}"
+

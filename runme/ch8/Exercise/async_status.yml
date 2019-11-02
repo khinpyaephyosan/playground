@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: yes
+  remote_user: ansible
+  tasks:
+    - name: download a file
+      get_url:
+        url: https://github.com/khinpyaephyosan/web_moinitor_sh/archive/master.zip
+        dest: /opt
+      async: 3600
+      poll: 0
+      register: download_sleeper
+    
+    - name: waite for download to finish
+      async_status: 
+        jid: "{{ download_sleeper.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 30
+
