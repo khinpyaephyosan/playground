@@ -8,6 +8,5 @@ m-node1
 m-node2
 
 [lab:children]
-myself
 web
 db
