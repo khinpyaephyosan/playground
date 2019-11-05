@@ -1,0 +1,14 @@
+---
+# tasks file for roles/encryptdisk
+
+  - name: copying the key file
+    template:
+      src: "{{ luks_key }}"
+      dest: /root/keyfile
+      owner: root
+      group: root
+      mode: 0600
+    when: addkey
+  - name: add new keyslot 
+    shell: echo {{ luks_pass }} | cryptsetup luksAddKey {{ luks_dev }} /root/keyfile
+    when: addkey

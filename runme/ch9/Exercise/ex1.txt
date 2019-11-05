@@ -1,0 +1,14 @@
+ansible-vault create ex1_super-secret.yml 
+ 1048  ls
+ 1049  cat ex1_super-secret.yml 
+ 1050  rm ex1_super-secret.yml 
+ 1051  ansible-vault create ex1_super-secret.yml
+ 1052  cat ex1_super-secret.yml 
+ 1053  ansible-vault view ex1_super-secret.yml 
+ 1054  vim passwd.yml
+ 1055  ansible-vault rekey ex1_super-secret.yml 
+ 1056  ansible-vault decrypt ex1_super-secret.yml --output=ex1_decrypt-file.yml
+ 1057  cat ex1_decrypt-file.yml 
+ 1058  vim passwd.yml 
+ 1059* ansible-vault encrypt ex1_super-secret.yml --output=
+ 1060  ansible-vault encrypt passwd.yml --output=encrypt-existing-passwd-file.ym

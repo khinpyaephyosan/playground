@@ -1,0 +1,7 @@
+---
+- hosts: lab
+  tasks:
+    - name: users are
+      debug:
+        var: "{{ item }}"
+      with_items: "{{ users }}"
