@@ -1,0 +1,3 @@
+---
+ansible_connection: smart
+ansible_ssh_port: 22

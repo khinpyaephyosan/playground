@@ -1,0 +1,14 @@
+---
+- hosts: db
+  become: yes
+  remote_user: ansible
+  tasks:
+    - name: skipped in check mode
+      debug:
+        var: ansible_memfree_mb
+        #verbosity: 3
+      when: not ansible_check_mode
+    - name: ignore errors in check mode
+      debug:
+        var: output
+      ignore_errors: "{{ ansible_check_mode }}"
